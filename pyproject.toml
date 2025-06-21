@@ -7,7 +7,7 @@ requires-python = ">=3.10"
 dependencies = [
     "click>=8.2.1",
     "cookiecutter>=2.6.0",
-    "render-engine>=2025.5.1",
+    "render-engine",
     "rich>=14.0.0",
     "toml>=0.10.2",
     "watchfiles>=1.1.0",
@@ -55,5 +55,3 @@ select = ["E", "F", "I", "UP"]
 [build-system]
 requires = ["setuptools", "setuptools_scm", "wheel"]
 build-backend = "setuptools.build_meta"
-
-
