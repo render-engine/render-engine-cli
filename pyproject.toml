@@ -1,7 +1,6 @@
 [project]
 name = "render-engine-cli"
 dynamic = ["version"]
-#version = "2025.6.1b1"
 description = "Command line tool for the Render Engine static site generator"
 readme = "README.md"
 requires-python = ">=3.10"

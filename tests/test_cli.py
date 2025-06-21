@@ -1,8 +1,7 @@
 import frontmatter
 import pytest
 import toml
-from render_engine import Page, Site
-from render_engine.collection import Collection
+from render_engine import Collection, Page, Site
 
 from render_engine_cli.utils import (
     CliConfig,
