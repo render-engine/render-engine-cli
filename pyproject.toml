@@ -34,7 +34,7 @@ repository = "https://github.com/render-engine/render-engine/"
 documentation = "https://render-engine.readthedocs.io/en/latest/"
 
 [project.scripts]
-render-engine = "render_engine_cli:cli"
+render-engine = "render_engine_cli.cli:app"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
