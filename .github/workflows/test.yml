@@ -1,0 +1,42 @@
+name: Tests
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/test.yml"
+      - "src/re_plugin_pack/**"
+      - "tests/**"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - ".github/workflows/test.yml"
+      - "src/re_plugin_pack/**"
+      - "tests/**"
+      - "pyproject.toml"
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Run Ruff
+        run: uv run ruff check . --output-format=github
+      - name: Ruff format
+        run: uv run ruff format . --check
+  test-against-python-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Run tests
+        run: |
+          uv run -p ${{ matrix.python-version }} pytest
