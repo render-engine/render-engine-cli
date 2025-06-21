@@ -52,6 +52,6 @@ jobs:
       - name: Set up env
         run: uv sync
       - name: Install package
-        run: uv install .
+        run: uv pip install .
       - name: Check entry point
         run: render-engine init --no-input
