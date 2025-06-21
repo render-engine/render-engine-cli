@@ -1,7 +1,7 @@
 import pathlib
 
-from render_engine_cli.utils import remove_output_folder
 from render_engine.site import Site
+from render_engine_cli.utils import remove_output_folder
 
 
 def test_clean_folder(tmp_path):
