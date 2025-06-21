@@ -2,6 +2,7 @@ import json
 
 import pytest
 from click.testing import CliRunner
+
 from render_engine_cli.cli import app
 
 

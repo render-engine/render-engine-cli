@@ -28,11 +28,12 @@ jobs:
       - name: Ruff format
         run: uv run ruff format . --check
   test-against-python-matrix:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
       fail-fast: true
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Install uv

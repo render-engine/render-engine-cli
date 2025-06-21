@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 from click.testing import CliRunner
+
 from render_engine_cli.cli import app
 
 
