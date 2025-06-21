@@ -27,7 +27,13 @@ that you do a local, editable install of the CLI in your virtual environment so 
 work with the changes you have made.
 
 ```shell
-uv pip install -e .
+
+uv pip install . && uv pip install -e .
 ```
+
+**NOTE**: The above actually has you installing the CLI as uneditable and then as editable. This
+is only needed as long as the main Render Engine install includes an entry point as there is a
+conflict. The `uv pip install .` will overwrite the entry point for `render-engine` while the
+second command, `uv pip insall -e .` will convert it to an editable install.
 
 This will allow you to test your changes via the command line.
