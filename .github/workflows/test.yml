@@ -41,3 +41,17 @@ jobs:
       - name: Run tests
         run: |
           uv run -p ${{ matrix.python-version }} pytest
+
+  test-entry-point:
+    runs-on: ubuntu-latest
+    name: Check the configured entry point
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up env
+        run: uv sync
+      - name: Install package
+        run: uv install .
+      - name: Check entry point
+        run: render-engine init --no-input

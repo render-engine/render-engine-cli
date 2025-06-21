@@ -34,7 +34,7 @@ repository = "https://github.com/render-engine/render-engine/"
 documentation = "https://render-engine.readthedocs.io/en/latest/"
 
 [project.scripts]
-render-engine = "render_engine_cli:cli"
+render-engine = "render_engine_cli.cli:app"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -55,5 +55,3 @@ select = ["E", "F", "I", "UP"]
 [build-system]
 requires = ["setuptools", "setuptools_scm", "wheel"]
 build-backend = "setuptools.build_meta"
-
-
