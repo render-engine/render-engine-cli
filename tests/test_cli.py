@@ -58,9 +58,7 @@ def test_import_lib_gets_site():
 def test_collection_call():
     """Tests that you can get content from the parser using `new_entry`"""
     test_collection = Collection()
-    content = create_collection_entry(
-        content=None, collection=test_collection, foo="bar"
-    )
+    content = create_collection_entry(content=None, collection=test_collection, foo="bar")
     post = frontmatter.loads(content)
 
     assert post["title"] == "Untitled Entry"
@@ -70,9 +68,7 @@ def test_collection_call():
 def test_collection_call_with_content():
     """Tests that you can get content from the parser using `new_entry`"""
     test_collection = Collection()
-    content = create_collection_entry(
-        content="This is a test", collection=test_collection, foo="bar"
-    )
+    content = create_collection_entry(content="This is a test", collection=test_collection, foo="bar")
     post = frontmatter.loads(content)
 
     assert post["title"] == "Untitled Entry"
@@ -111,9 +107,7 @@ def test_split_args_error_handling():
 def test_config_loading_with_valid_config(tmp_path, monkeypatch):
     """Tests config loading from pyproject.toml (2025.5.1b1 feature)"""
     config_content = {
-        "tool.render-engine": {
-            "cli": {"module": "myapp", "site": "MySite", "collection": "MyCollection"}
-        }
+        "tool.render-engine": {"cli": {"module": "myapp", "site": "MySite", "collection": "MyCollection"}}
     }
 
     config_file = tmp_path / "pyproject.toml"
@@ -183,9 +177,7 @@ def test_split_module_site_invalid():
     """Tests split_module_site with invalid input"""
     import click
 
-    with pytest.raises(
-        click.exceptions.BadParameter, match="module_site must be of the form"
-    ):
+    with pytest.raises(click.exceptions.BadParameter, match="module_site must be of the form"):
         split_module_site("invalid_format")
 
 
