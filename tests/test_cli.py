@@ -58,7 +58,9 @@ def test_import_lib_gets_site():
 def test_collection_call():
     """Tests that you can get content from the parser using `new_entry`"""
     test_collection = Collection()
-    content = create_collection_entry(content=None, collection=test_collection, foo="bar")
+    content = create_collection_entry(
+        content=None, collection=test_collection, foo="bar"
+    )
     post = frontmatter.loads(content)
 
     assert post["title"] == "Untitled Entry"
@@ -68,7 +70,9 @@ def test_collection_call():
 def test_collection_call_with_content():
     """Tests that you can get content from the parser using `new_entry`"""
     test_collection = Collection()
-    content = create_collection_entry(content="This is a test", collection=test_collection, foo="bar")
+    content = create_collection_entry(
+        content="This is a test", collection=test_collection, foo="bar"
+    )
     post = frontmatter.loads(content)
 
     assert post["title"] == "Untitled Entry"
@@ -81,7 +85,10 @@ def test_collection_call_with_content():
     [
         (["key1=value1", "key2=value2"], {"key1": "value1", "key2": "value2"}),
         (["key1:value1", "key2:value2"], {"key1": "value1", "key2": "value2"}),
-        (["author=John Doe", "tags:python,testing"], {"author": "John Doe", "tags": "python,testing"}),
+        (
+            ["author=John Doe", "tags:python,testing"],
+            {"author": "John Doe", "tags": "python,testing"},
+        ),
         ([], {}),
         (None, {}),
     ],
@@ -103,7 +110,11 @@ def test_split_args_error_handling():
 
 def test_config_loading_with_valid_config(tmp_path, monkeypatch):
     """Tests config loading from pyproject.toml (2025.5.1b1 feature)"""
-    config_content = {"render-engine": {"cli": {"module": "myapp", "site": "MySite", "collection": "MyCollection"}}}
+    config_content = {
+        "tool.render-engine": {
+            "cli": {"module": "myapp", "site": "MySite", "collection": "MyCollection"}
+        }
+    }
 
     config_file = tmp_path / "pyproject.toml"
     config_file.write_text(toml.dumps(config_content))
@@ -145,7 +156,10 @@ def test_collection_entry_with_custom_attributes():
     """Tests that custom attributes are passed through to collection entry"""
     test_collection = Collection()
     content = create_collection_entry(
-        content="Test content", collection=test_collection, author="Test Author", tags="test,example"
+        content="Test content",
+        collection=test_collection,
+        author="Test Author",
+        tags="test,example",
     )
     post = frontmatter.loads(content)
 
@@ -169,7 +183,9 @@ def test_split_module_site_invalid():
     """Tests split_module_site with invalid input"""
     import click
 
-    with pytest.raises(click.exceptions.BadParameter, match="module_site must be of the form"):
+    with pytest.raises(
+        click.exceptions.BadParameter, match="module_site must be of the form"
+    ):
         split_module_site("invalid_format")
 
 

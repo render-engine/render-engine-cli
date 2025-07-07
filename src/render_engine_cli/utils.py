@@ -48,9 +48,15 @@ class CliConfig:
         try:
             with open(config_file) as stored_config_file:
                 try:
-                    stored_config = toml.load(stored_config_file).get("render-engine", {}).get("cli", {})
+                    stored_config = (
+                        toml.load(stored_config_file)
+                        .get("tool.render-engine", {})
+                        .get("cli", {})
+                    )
                 except TomlDecodeError as exc:
-                    click.echo(f"Encountered an error while parsing {config_file} - {exc}.")
+                    click.echo(
+                        f"Encountered an error while parsing {config_file} - {exc}."
+                    )
                 else:
                     click.echo(f"Config loaded from {config_file}")
         except FileNotFoundError:
@@ -58,7 +64,9 @@ class CliConfig:
 
         if stored_config:
             # Populate the argument variables and default values from the config
-            if (module := stored_config.get("module")) and (site := stored_config.get("site")):
+            if (module := stored_config.get("module")) and (
+                site := stored_config.get("site")
+            ):
                 self._module_site = f"{module}:{site}"
             if default_collection := stored_config.get("collection"):
                 self._collection = default_collection
@@ -76,7 +84,9 @@ def get_site(import_path: str, site: str, reload: bool = False) -> Site:
 def get_site_content_paths(site: Site) -> list[Path | str | None]:
     """Get the content paths from the route_list in the Site"""
 
-    base_paths = map(lambda x: getattr(x, "content_path", None), site.route_list.values())
+    base_paths = map(
+        lambda x: getattr(x, "content_path", None), site.route_list.values()
+    )
     base_paths = list(filter(None, base_paths))
     base_paths.extend(site.static_paths)
     if site.template_path:
@@ -114,7 +124,9 @@ def get_available_themes(console: Console, site: Site, theme_name: str) -> list[
 
 def create_collection_entry(content: str | None, collection: Collection, **context):
     """Creates a new entry for a collection"""
-    return collection.Parser.create_entry(content=content, **collection._metadata_attrs(), **context)
+    return collection.Parser.create_entry(
+        content=content, **collection._metadata_attrs(), **context
+    )
 
 
 def split_args(args: list[str] | None) -> dict[str, str]:
@@ -137,7 +149,9 @@ def split_args(args: list[str] | None) -> dict[str, str]:
     return split_arguments
 
 
-def display_filtered_templates(title: str, templates_list: list[str], filter_value: str) -> None:
+def display_filtered_templates(
+    title: str, templates_list: list[str], filter_value: str
+) -> None:
     """Display filtered templates based on a given filter value."""
     table = Table(title=title)
     table.add_column("[bold blue]Templates[bold blue]")
@@ -156,7 +170,9 @@ def validate_module_site(ctx: dict, param: str, value: str) -> str:
         config = CliConfig()
         if config.module_site and split_module_site(config.module_site):
             return config.module_site
-    raise click.exceptions.BadParameter("module_site must be in the form of module:site")
+    raise click.exceptions.BadParameter(
+        "module_site must be in the form of module:site"
+    )
 
 
 def validate_collection(ctx: dict, param: click.Option, value: str) -> str:
@@ -168,17 +184,25 @@ def validate_collection(ctx: dict, param: click.Option, value: str) -> str:
     raise click.exceptions.BadParameter("collection must be specified.")
 
 
-def validate_file_name_or_slug(ctx: click.Context, param: click.Option, value: str) -> str | None:
+def validate_file_name_or_slug(
+    ctx: click.Context, param: click.Option, value: str
+) -> str | None:
     if value:
         if " " in value:
-            raise click.exceptions.BadParameter(f"Spaces are not allowed in {param.name}.")
+            raise click.exceptions.BadParameter(
+                f"Spaces are not allowed in {param.name}."
+            )
         click.echo(f"Setting {param.name} to {value}")
         return value
-    if (title_or_slug := ctx.params.get("title")) or (title_or_slug := ctx.params.get("slug")):
+    if (title_or_slug := ctx.params.get("title")) or (
+        title_or_slug := ctx.params.get("slug")
+    ):
         slugged = slugify(title_or_slug)
         value = slugged + ".md" if param.name == "filename" else slugged
         click.echo(f"Setting {param.name} to {value}")
         return value
     if param.name == "filename":
-        raise click.exceptions.BadParameter("One of filename, title, or slug must be provided.")
+        raise click.exceptions.BadParameter(
+            "One of filename, title, or slug must be provided."
+        )
     return None
