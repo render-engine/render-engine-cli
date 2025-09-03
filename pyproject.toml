@@ -40,9 +40,8 @@ render-engine = "render_engine_cli.cli:app"
 pythonpath = ["src"]
 addopts = ["--cov=src", "--cov-report=term-missing", "-ra", "-q"]
 
-[tool.semantic_release]
-version_toml = "pyproject.toml:project.version"
-branch = "main"
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
 
 [tool.ruff]
 line-length = 120
