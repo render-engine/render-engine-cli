@@ -6,8 +6,8 @@ on:
 
 permissions:
   contents: write
-  pull-requests: read
-  id-token: read
+  pull-requests: write
+  id-token: write
 
 jobs:
   test:
