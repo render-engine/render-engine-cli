@@ -7,6 +7,8 @@ on:
 jobs:
   test:
     uses: ./.github/workflows/test.yml
+  lint:
+    uses: ./.github/workflows/lint.yml
   deploy:
     needs: [test, lint]
     name: Deploy to PyPI
