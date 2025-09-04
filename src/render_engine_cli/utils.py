@@ -48,7 +48,9 @@ class CliConfig:
         try:
             with open(config_file) as stored_config_file:
                 try:
-                    stored_config = toml.load(stored_config_file).get("tool.render-engine", {}).get("cli", {})
+                    stored_config = (
+                        toml.load(stored_config_file).get("tool", {}).get("render-engine", {}).get("cli", {})
+                    )
                 except TomlDecodeError as exc:
                     click.echo(f"Encountered an error while parsing {config_file} - {exc}.")
                 else:

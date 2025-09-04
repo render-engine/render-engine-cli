@@ -1,6 +1,5 @@
 import frontmatter
 import pytest
-import toml
 from render_engine import Collection, Page, Site
 
 from render_engine_cli.utils import (
@@ -106,12 +105,14 @@ def test_split_args_error_handling():
 
 def test_config_loading_with_valid_config(tmp_path, monkeypatch):
     """Tests config loading from pyproject.toml (2025.5.1b1 feature)"""
-    config_content = {
-        "tool.render-engine": {"cli": {"module": "myapp", "site": "MySite", "collection": "MyCollection"}}
-    }
-
+    config_content = """
+[tool.render-engine.cli]
+module = "myapp"
+site = "MySite"
+collection = "MyCollection"
+"""
     config_file = tmp_path / "pyproject.toml"
-    config_file.write_text(toml.dumps(config_content))
+    config_file.write_text(config_content)
 
     # Change to temp directory for config loading test
     monkeypatch.chdir(tmp_path)
