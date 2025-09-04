@@ -25,8 +25,6 @@ from render_engine_cli.utils import (
     validate_module_site,
 )
 
-click.echo("[bold green]In the new CLI[/bold green]", color=True)
-
 
 @click.group()
 def app():
@@ -87,9 +85,10 @@ def init(template: str, extra_context: str, no_input: bool, output_dir: Path, co
     try:
         from cookiecutter.main import cookiecutter
     except ImportError:
-        click.echo(
+        click.secho(
             "You need to install cookiecutter to use this command. Run `pip install cookiecutter` to install it.",
             err=True,
+            fg="red",
         )
         raise click.Exit(0)
     extra_context = json.loads(extra_context) if extra_context else None
