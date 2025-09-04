@@ -52,7 +52,10 @@ class CliConfig:
                         toml.load(stored_config_file).get("tool", {}).get("render-engine", {}).get("cli", {})
                     )
                 except TomlDecodeError as exc:
-                    click.echo(f"Encountered an error while parsing {config_file} - {exc}.")
+                    click.echo(
+                        f"{click.style(f'Encountered an error while parsing {config_file}', fg='red')}\n{exc}\n",
+                        err=True,
+                    )
                 else:
                     click.echo(f"Config loaded from {config_file}")
         except FileNotFoundError:
