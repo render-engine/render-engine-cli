@@ -127,7 +127,7 @@ def test_new_entry_command_success(runner, test_site_module, monkeypatch):
     """Tests new_entry command with valid parameters"""
     tmp_path, module_site = test_site_module
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr("render_engine_cli.cli.os.getenv", lambda *_: {})
+    monkeypatch.setattr("render_engine_cli.utils.getenv", lambda *_: {})
 
     # Create content directory
     content_dir = tmp_path / "content"
@@ -172,7 +172,7 @@ def test_new_entry_command_with_args(runner, test_site_module, monkeypatch):
     """Tests new_entry command with --args parameter"""
     tmp_path, module_site = test_site_module
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr("render_engine_cli.cli.os.getenv", lambda *_: {})
+    monkeypatch.setattr("render_engine_cli.utils.getenv", lambda *_: {})
 
     content_dir = tmp_path / "content"
     content_dir.mkdir()
@@ -268,7 +268,7 @@ def test_new_entry_date_options(options, expected, monkeypatch, test_site_module
 
     tmp_path, module_site = test_site_module
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr("render_engine_cli.cli.os.getenv", lambda *_: {})
+    monkeypatch.setattr("render_engine_cli.utils.getenv", lambda *_: {})
     monkeypatch.setattr("render_engine_cli.cli.create_collection_entry", mock_create_collection_entry)
     content_dir = tmp_path / "content"
     content_dir.mkdir()
