@@ -2,6 +2,8 @@ import importlib
 import re
 import shutil
 import sys
+from dataclasses import dataclass
+from os import getenv
 from pathlib import Path
 
 import click
@@ -16,13 +18,9 @@ from toml import TomlDecodeError
 CONFIG_FILE_NAME = "pyproject.toml"
 
 
+@dataclass
 class CliConfig:
     """Handles loading and storing the config from disk"""
-
-    def __init__(self):
-        self._module_site = None
-        self._collection = None
-        self._config_loaded = False
 
     @property
     def module_site(self):
@@ -38,9 +36,20 @@ class CliConfig:
             self._config_loaded = True
         return self._collection
 
+    @property
+    def editor(self):
+        if not self._config_loaded:
+            self.load_config()
+            self._config_loaded = True
+        return self._editor
+
     # Initialize the arguments and default values
-    _module_site, _collection = None, None
-    default_module_site, default_collection = None, None
+    _module_site: str = None
+    _collection: str = None
+    default_module_site: str = None
+    default_collection: str = None
+    _editor: str = None
+    _config_loaded: bool = False
 
     def load_config(self, config_file: str = CONFIG_FILE_NAME):
         """Load the config from the file"""
@@ -61,12 +70,16 @@ class CliConfig:
         except FileNotFoundError:
             click.echo(f"No config file found at {config_file}")
 
+        self._editor = stored_config.get("editor", getenv("EDITOR"))
         if stored_config:
             # Populate the argument variables and default values from the config
             if (module := stored_config.get("module")) and (site := stored_config.get("site")):
                 self._module_site = f"{module}:{site}"
             if default_collection := stored_config.get("collection"):
                 self._collection = default_collection
+
+
+config = CliConfig()
 
 
 def get_site(import_path: str, site: str, reload: bool = False) -> Site:
@@ -165,15 +178,16 @@ def validate_module_site(ctx: dict, param: str, value: str) -> str:
 
 
 def validate_collection(ctx: dict, param: click.Option, value: str) -> str:
+    """Validate the collection option"""
     if value:
         return value
-    config = CliConfig()
     if config.collection:
         return config.collection
     raise click.exceptions.BadParameter("collection must be specified.")
 
 
 def validate_file_name_or_slug(ctx: click.Context, param: click.Option, value: str) -> str | None:
+    """Validate the filename and slug options"""
     if value:
         if " " in value:
             raise click.exceptions.BadParameter(f"Spaces are not allowed in {param.name}.")
@@ -187,3 +201,14 @@ def validate_file_name_or_slug(ctx: click.Context, param: click.Option, value: s
     if param.name == "filename":
         raise click.exceptions.BadParameter("One of filename, title, or slug must be provided.")
     return None
+
+
+def get_editor(ctx: click.Context, param: click.Option, value: str) -> str | None:
+    """Get the appropriate editor"""
+    match value.casefold():
+        case "default":
+            return config.editor
+        case "none":
+            return None
+        case _:
+            return value

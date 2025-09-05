@@ -7,6 +7,7 @@ from render_engine_cli.utils import (
     create_collection_entry,
     display_filtered_templates,
     get_available_themes,
+    get_editor,
     get_site_content_paths,
     split_args,
     split_module_site,
@@ -232,3 +233,12 @@ def test_display_filtered_templates():
         # Check that the table was created with filtered results
         call_args = mock_rprint.call_args[0][0]
         assert call_args.title == "Test Templates"
+
+
+@pytest.mark.parametrize(
+    "selection, expected", [("none", None), ("DEFAULT", "vim"), ("default", "vim"), ("nano", "nano")]
+)
+def test_get_editor(selection, expected, monkeypatch):
+    """Test the get_editor callback"""
+    monkeypatch.setattr("render_engine_cli.utils.getenv", lambda *_: "vim")
+    assert get_editor(None, None, value=selection) == expected
