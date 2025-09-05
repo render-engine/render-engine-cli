@@ -1,6 +1,5 @@
 import datetime
 import json
-import os
 import re
 import subprocess
 from pathlib import Path
@@ -8,6 +7,7 @@ from pathlib import Path
 import click
 from dateutil import parser as dateparser
 from dateutil.parser import ParserError
+from render_engine import Collection
 from rich.console import Console
 
 from render_engine_cli.event import ServerEventHandler
@@ -15,6 +15,7 @@ from render_engine_cli.utils import (
     create_collection_entry,
     display_filtered_templates,
     get_available_themes,
+    get_editor,
     get_site,
     get_site_content_paths,
     remove_output_folder,
@@ -145,7 +146,7 @@ def build(module_site: str, clean: bool):
     is_flag=True,
     default=False,
 )
-@click.option("-p", "--port", type=click.IntRange(0, 65534), help="Port to serve on", default=8000)
+@click.option("-p", "--port", type=click.IntRange(0, 65534), help="Port to serve on", default=8000.0)
 def serve(module_site: str, clean: bool, reload: bool, port: int):
     """
     Create an HTTP server to serve the site at `localhost`.
@@ -217,9 +218,19 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
     help="Title for the new entry.",
     default=None,
 )
-@click.option("-s", "--slug", type=click.STRING, help="Slug for the new page.", callback=validate_file_name_or_slug)
 @click.option(
-    "-d", "--include-date", is_flag=True, default=False, help="Include today's date in the metadata for your entry."
+    "-s",
+    "--slug",
+    type=click.STRING,
+    help="Slug for the new page.",
+    callback=validate_file_name_or_slug,
+)
+@click.option(
+    "-d",
+    "--include-date",
+    is_flag=True,
+    default=False,
+    help="Include today's date in the metadata for your entry.",
 )
 @click.option(
     "-a",
@@ -228,7 +239,15 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
     type=click.STRING,
     help="key value attrs to include in your entry use the format `--args key=value` or `--args key:value`",
 )
-@click.option("--editor/--no-editor", default=True, help="Load the system editor after the file is created.")
+@click.option(
+    "-e",
+    "--editor",
+    default="default",
+    type=click.STRING,
+    callback=get_editor,
+    help="Select the editor to use. If not set the default editor (as set by the EDITOR environment variable) "
+    "will be used. If 'none' is set no editor will be launched.",
+)
 @click.option(
     "-f",
     "--filename",
@@ -245,7 +264,7 @@ def new_entry(
     slug: str,
     include_date: bool,
     args: list[str],
-    editor: bool,
+    editor: str,
     filename: str,
 ):
     """Creates a new collection entry based on the parser. Entries are added to the Collections content_path"""
@@ -272,12 +291,20 @@ def new_entry(
 
     module, site_name = split_module_site(module_site)
     site = get_site(module, site_name)
+    _collection: Collection
     if not (
         _collection := next(
             coll for coll in site.route_list.values() if type(coll).__name__.lower() == collection.lower()
         )
     ):
         raise click.exceptions.BadParameter(f"Unknown collection: {collection}")
+    filepath = Path(_collection.content_path).joinpath(filename)
+    if filepath.exists():
+        if not click.confirm(
+            f"File {filename} exists are {_collection.content_path} - do you wish to overwrite that file?"
+        ):
+            click.secho("Aborting new entry.", fg="yellow")
+            return
     if content and content_file:
         raise TypeError("Both content and content_file provided. At most one may be provided.")
     if content_file:
@@ -287,11 +314,10 @@ def new_entry(
         # If we had a title earlier this is where we replace the default that is added by the template handler with
         # the one supplied by the user.
         entry = re.sub(r"title: Untitled Entry", f"title: {title}", entry)
-    filepath = Path(_collection.content_path).joinpath(filename)
     filepath.write_text(entry)
     Console().print(f'New {collection} entry created at "{filepath}"')
 
-    if editor and (editor := os.getenv("EDITOR", None)):
+    if editor:
         subprocess.run([editor, filepath])
 
 
