@@ -223,7 +223,7 @@ def handle_content_file(ctx: click.Context, param: click.Option, value: str) -> 
             content.append(line)
         return "\n".join(content)
     path = Path(value)
-    if not path.exists:
+    if not path.exists():
         raise click.exceptions.BadParameter(
             f'Either the path to a file or "stdin" must be provided. {repr(value)} is invalid.'
         )
