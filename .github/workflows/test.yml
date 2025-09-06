@@ -5,15 +5,10 @@ on:
   push:
     branches:
       - main
-    paths:
-      - ".github/workflows/test.yml"
-      - "src/re_plugin_pack/**"
-      - "tests/**"
-      - "pyproject.toml"
   pull_request:
     paths:
       - ".github/workflows/test.yml"
-      - "src/re_plugin_pack/**"
+      - "src/**"
       - "tests/**"
       - "pyproject.toml"
 jobs:
