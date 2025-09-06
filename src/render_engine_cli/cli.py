@@ -18,6 +18,7 @@ from render_engine_cli.utils import (
     get_editor,
     get_site,
     get_site_content_paths,
+    handle_content_file,
     remove_output_folder,
     split_args,
     split_module_site,
@@ -207,9 +208,11 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
 )
 @click.option(
     "--content-file",
-    type=click.File("r"),
+    type=click.STRING,
+    callback=handle_content_file,
     default=None,
-    help="Path to a file containing the desired content. Either this or `--content` may be provided but not both",
+    help="Path to a file containing the desired content. Using 'stdin' will ask you to enter the content in "
+    "the terminal. Either this or `--content` may be provided but not both",
 )
 @click.option(
     "-t",
@@ -259,7 +262,7 @@ def new_entry(
     module_site: str,
     collection: str,
     content: str,
-    content_file: click.File,
+    content_file: str,
     title: str,
     slug: str,
     include_date: bool,
@@ -308,7 +311,7 @@ def new_entry(
     if content and content_file:
         raise TypeError("Both content and content_file provided. At most one may be provided.")
     if content_file:
-        content = content_file.read()
+        content = content_file
     entry = create_collection_entry(content=content or "", collection=_collection, **parsed_args)
     if title:
         # If we had a title earlier this is where we replace the default that is added by the template handler with
