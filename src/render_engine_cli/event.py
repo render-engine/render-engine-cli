@@ -124,9 +124,12 @@ class ServerEventHandler:
 
         console.print(f"[yellow]Serving {self.output_path}[/yellow]")
         while not self.stop_watcher():
-            if self.dirs_to_watch:
-                for _ in watchfiles.watch(*self.dirs_to_watch):
-                    self.rebuild()
+            try:
+                if self.dirs_to_watch:
+                    for _ in watchfiles.watch(*self.dirs_to_watch):
+                        self.rebuild()
+            except KeyboardInterrupt:
+                break
 
     def __enter__(self):
         """Starting Context manager for the class"""
