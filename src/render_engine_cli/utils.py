@@ -216,6 +216,8 @@ def get_editor(ctx: click.Context, param: click.Option, value: str) -> str | Non
 
 def handle_content_file(ctx: click.Context, param: click.Option, value: str) -> str | None:
     """Handle the content file"""
+    if not value:
+        return None
     if value == "stdin":
         content = list()
         click.secho('Please enter the content. To finish, put a "." on a blank line.', fg="green")
