@@ -221,7 +221,6 @@ def handle_content_file(ctx: click.Context, param: click.Option, value: str) -> 
         click.secho('Please enter the content. To finish, put a "." on a blank line.', fg="green")
         while (line := input("")) != ".":
             content.append(line)
-        print(content)
         return "\n".join(content)
     path = Path(value)
     if not path.exists:
