@@ -216,6 +216,8 @@ def get_editor(ctx: click.Context, param: click.Option, value: str) -> str | Non
 
 def handle_content_file(ctx: click.Context, param: click.Option, value: str) -> str | None:
     """Handle the content file"""
+    if value is None:
+        return ""
     if value == "stdin":
         content = list()
         click.secho('Please enter the content. To finish, put a "." on a blank line.', fg="green")
@@ -223,7 +225,7 @@ def handle_content_file(ctx: click.Context, param: click.Option, value: str) -> 
             content.append(line)
         return "\n".join(content)
     path = Path(value)
-    if not path.exists():
+    if not path.exists() or path.is_dir():
         raise click.exceptions.BadParameter(
             f'Either the path to a file or "stdin" must be provided. {repr(value)} is invalid.'
         )
