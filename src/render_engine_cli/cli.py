@@ -30,7 +30,6 @@ from render_engine_cli.utils import (
 
 @click.group()
 def app():
-    print("App invoked.")
     ...
 
 
