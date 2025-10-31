@@ -1,7 +1,5 @@
 import datetime
 import json
-import re
-import subprocess
 from pathlib import Path
 
 import click
@@ -299,6 +297,7 @@ def new_entry(
         )
     ):
         raise click.exceptions.BadParameter(f"Unknown collection: {collection}")
+    # pdb.set_trace()
     filepath = Path(_collection.content_path).joinpath(filename)
     if filepath.exists():
         if not click.confirm(
@@ -310,16 +309,19 @@ def new_entry(
         raise TypeError("Both content and content_file provided. At most one may be provided.")
     if content_file:
         content = content_file
-    entry = create_collection_entry(content=content or "", collection=_collection, **parsed_args)
     if title:
-        # If we had a title earlier this is where we replace the default that is added by the template handler with
-        # the one supplied by the user.
-        entry = re.sub(r"title: Untitled Entry", f"title: {title}", entry)
-    filepath.write_text(entry)
-    Console().print(f'New {collection} entry created at "{filepath}"')
-
-    if editor:
-        subprocess.run([editor, filepath])
+        parsed_args["title"] = title
+    try:
+        entry = create_collection_entry(
+            editor=editor,
+            filepath=filepath,
+            content=content or "",
+            collection=_collection,
+            **parsed_args,
+        )
+    except ValueError as e:
+        raise click.BadParameter from e
+    click.echo(entry)
 
 
 @app.command
