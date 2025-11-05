@@ -166,3 +166,6 @@ untitled-site/
 
 .DS_Store
 .python-version
+
+# We do not want to commit the version file.
+__version__.py
