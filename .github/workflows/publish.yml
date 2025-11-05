@@ -23,7 +23,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-      - run: uv build
+      - run: uv build --prerelease=allow
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: ./dist

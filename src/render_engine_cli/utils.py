@@ -130,9 +130,11 @@ def get_available_themes(console: Console, site: Site, theme_name: str) -> list[
         return []
 
 
-def create_collection_entry(content: str | None, collection: Collection, **context):
+def create_collection_entry(
+    filepath: Path, editor: str | None, content: str | None, collection: Collection, **context
+) -> str:
     """Creates a new entry for a collection"""
-    return collection.Parser.create_entry(content=content, **collection._metadata_attrs(), **context)
+    return collection.create_entry(filepath=filepath, editor=editor, content=content, metadata=context)
 
 
 def split_args(args: list[str] | None) -> dict[str, str]:
