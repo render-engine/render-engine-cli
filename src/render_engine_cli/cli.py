@@ -25,8 +25,27 @@ from render_engine_cli.utils import (
     validate_module_site,
 )
 
+try:
+    # Get the RE version for display. If it's not set it means we're working locally.
+    from render_engine.__version__ import version as re_version
+except ImportError:
+    re_version = "development"
+
+try:
+    # Get the CLI version for display. If it's not set it means we're working locally.
+    from render_engine_cli.__version__ import version as cli_version
+except ImportError:
+    cli_version = "development"
+
+
+def get_version_string() -> str:
+    return f"""
+Render Engine CLI version {cli_version}
+Render Engine     version {re_version}""".strip()
+
 
 @click.group()
+@click.version_option(message=get_version_string())
 def app(): ...
 
 
@@ -297,7 +316,7 @@ def new_entry(
         )
     ):
         raise click.exceptions.BadParameter(f"Unknown collection: {collection}")
-    # pdb.set_trace()
+
     filepath = Path(_collection.content_path).joinpath(filename)
     if filepath.exists():
         if not click.confirm(
