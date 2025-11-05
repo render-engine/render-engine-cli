@@ -55,21 +55,33 @@ def test_import_lib_gets_site():
     pass
 
 
-def test_collection_call():
+def test_collection_call(tmp_path_factory):
     """Tests that you can get content from the parser using `new_entry`"""
     test_collection = Collection()
-    content = create_collection_entry(content=None, collection=test_collection, foo="bar")
-    post = frontmatter.loads(content)
+    content_path1 = tmp_path_factory.getbasetemp()
+    filepath = content_path1 / "test.md"
+    content = create_collection_entry(
+        collection=test_collection, content=None, foo="bar", filepath=filepath, editor=None
+    )
+    assert content.strip() == f"New entry created at {filepath} ."
 
+    post = frontmatter.loads(filepath.read_text())
+    print(filepath.read_text())
     assert post["title"] == "Untitled Entry"
     assert post["foo"] == "bar"
 
 
-def test_collection_call_with_content():
+def test_collection_call_with_content(tmp_path_factory):
     """Tests that you can get content from the parser using `new_entry`"""
     test_collection = Collection()
-    content = create_collection_entry(content="This is a test", collection=test_collection, foo="bar")
-    post = frontmatter.loads(content)
+    content_path1 = tmp_path_factory.getbasetemp()
+    filepath = content_path1 / "test.md"
+    create_collection_entry(
+        content="This is a test", collection=test_collection, foo="bar", filepath=filepath, editor=None
+    )
+    print(filepath.read_text())
+
+    post = frontmatter.loads(filepath.read_text())
 
     assert post["title"] == "Untitled Entry"
     assert post["foo"] == "bar"
@@ -148,16 +160,21 @@ def test_config_loading_invalid_file(tmp_path, monkeypatch, capsys):
     CliConfig().load_config(str(config_file))
 
 
-def test_collection_entry_with_custom_attributes():
+def test_collection_entry_with_custom_attributes(tmp_path_factory):
     """Tests that custom attributes are passed through to collection entry"""
     test_collection = Collection()
-    content = create_collection_entry(
+    content_path1 = tmp_path_factory.getbasetemp()
+    filepath = content_path1 / "test.md"
+
+    create_collection_entry(
         content="Test content",
         collection=test_collection,
         author="Test Author",
         tags="test,example",
+        filepath=filepath,
+        editor=None,
     )
-    post = frontmatter.loads(content)
+    post = frontmatter.loads(filepath.read_text())
 
     assert post["author"] == "Test Author"
     assert post["tags"] == "test,example"

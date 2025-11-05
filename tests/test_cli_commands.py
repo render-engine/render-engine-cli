@@ -162,10 +162,6 @@ def test_new_entry_command_success(runner, test_site_module, monkeypatch):
         assert result.exit_code == 0, result.output
         mock_create_entry.assert_called_once()
 
-        # Check that the file was created
-        created_file = content_dir / "test.md"
-        assert created_file.exists()
-
 
 def test_new_entry_command_with_args(runner, test_site_module, monkeypatch):
     """Tests new_entry command with --args parameter"""
@@ -227,7 +223,12 @@ def test_new_entry_command_missing_required_args(runner):
                 "slug": "slug1",
                 "content": "content",
             },
-            {"date": datetime.datetime.fromisoformat("2025-05-23T00:00:00"), "slug": "slug1", "content": "content"},
+            {
+                "date": datetime.datetime.fromisoformat("2025-05-23T00:00:00"),
+                "slug": "slug1",
+                "content": "content",
+                "title": "New Entry",
+            },
         ),
         (
             {
@@ -239,7 +240,12 @@ def test_new_entry_command_missing_required_args(runner):
                 "content": "content",
                 "include-date": True,
             },
-            {"date": datetime.datetime.fromisoformat("2025-05-23T00:00:00"), "slug": "slug1", "content": "content"},
+            {
+                "date": datetime.datetime.fromisoformat("2025-05-23T00:00:00"),
+                "slug": "slug1",
+                "content": "content",
+                "title": "New Entry",
+            },
         ),
         (
             {
@@ -249,7 +255,7 @@ def test_new_entry_command_missing_required_args(runner):
                 "slug": "slug1",
                 "content": "content",
             },
-            {"slug": "slug1", "content": "content"},
+            {"slug": "slug1", "content": "content", "title": "New Entry"},
         ),
     ],
 )
@@ -290,11 +296,14 @@ def test_new_entry_date_options(options, expected, monkeypatch, test_site_module
             else:
                 formatted_options.extend([f"--{key}", value])
 
-        print(formatted_options)
-        result = runner.invoke(app, ["new-entry", "--module-site", module_site, *formatted_options])
-        print(result.output)
+        runner.invoke(app, ["new-entry", "--module-site", module_site, *formatted_options])
         # Pop the collection from the passed arguments since it's not relevant.
         passed_args.pop("collection", None)
+
+        # We can remove the editor because we're not actually testing with that.
+        passed_args.pop("editor")
+
+        assert passed_args.pop("filepath") == content_dir / options["filename"]
 
         # include_date needs some special handling.
         if "include_date" in options:

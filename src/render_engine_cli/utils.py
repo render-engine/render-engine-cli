@@ -134,7 +134,7 @@ def create_collection_entry(
     filepath: Path, editor: str | None, content: str | None, collection: Collection, **context
 ) -> str:
     """Creates a new entry for a collection"""
-    return collection.content_manager.create_entry(filepath, editor, content, context)
+    return collection.create_entry(filepath=filepath, editor=editor, content=content, metadata=context)
 
 
 def split_args(args: list[str] | None) -> dict[str, str]:
