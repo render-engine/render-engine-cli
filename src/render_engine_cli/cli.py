@@ -5,7 +5,8 @@ from pathlib import Path
 import click
 from dateutil import parser as dateparser
 from dateutil.parser import ParserError
-from render_engine import Collection
+from render_engine import Collection, Page
+from render_engine.site_map import SiteMap
 from rich.console import Console
 
 from render_engine_cli.event import ServerEventHandler
@@ -394,6 +395,43 @@ def templates(module_site: str, theme_name: str, filter_value: str):
                 templates_list,
                 filter_value,
             )
+
+
+@app.command
+@click.option(
+    "--module-site",
+    type=click.STRING,
+    # help="The module (python file) and site (the Site object) for your site in the format module:site",
+    callback=validate_module_site,
+)
+@click.option(
+    "-x",
+    "--xml",
+    help="Generate site map as XML",
+    type=click.BOOL,
+    is_flag=True,
+    default=False,
+)
+@click.option("-o", "--output", help="File to output site map to.", type=click.Path(exists=False))
+def sitemap(xml: bool, output: click.File, module_site: str):
+    """
+    CLI for generating the site map in HTML (default) or XML to either the console (default) or a file.
+    """
+    module, site_name = split_module_site(module_site)
+    site = get_site(module, site_name)
+    site_map = SiteMap(site.route_list, site.site_vars.get("SITE_URL", ""))
+    if xml:
+        site.theme_manager.engine.globals.update(site.site_vars)
+        site_map_page = Page()
+        site_map_page.template = "sitemap.xml"
+        site_map_page.site_map = site_map
+        content = site_map_page._render_content(site.theme_manager.engine)
+    else:
+        content = site_map.html
+    if output:
+        Path(output).write_text(content)
+    else:
+        print(content)
 
 
 if __name__ == "__main__":
