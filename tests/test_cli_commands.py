@@ -387,3 +387,46 @@ def test_serve_command_with_reload(runner, test_site_module, monkeypatch):
 
         assert result.exit_code == 0, result.output
         mock_get_paths.assert_called_once_with(mock_site)
+
+
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        ([], ["console", "html"]),
+        (["-x"], ["console", "xml"]),
+        (["-x", "-o", "sitemap.xml"], ["file", "xml"]),
+        (["-o", "sitemap.html"], ["file", "html"]),
+    ],
+)
+def test_sitemap(runner, test_site_module, monkeypatch, params, expected):
+    """Tests sitemap generation command"""
+
+    class MockSiteMap:
+        def __init__(self, *args, **kwargs): ...
+
+        @property
+        def html(self):
+            return "sitemap"
+
+    class MockPage:
+        def __init__(self, *args, **kwargs): ...
+
+        def _render_content(self, *args, **kwargs):
+            return "sitemap"
+
+    with (
+        patch("render_engine_cli.cli.get_site") as mock_get_site,
+    ):
+        monkeypatch.setattr("render_engine_cli.cli.SiteMap", MockSiteMap)
+        monkeypatch.setattr("render_engine_cli.cli.Page", MockPage)
+        mock_site = Mock()
+        mock_get_site.return_value = mock_site
+        with runner.isolated_filesystem():
+            result = runner.invoke(app, ["sitemap", "--module-site", "test:test", *params])
+            output_loc, output_type = expected
+            expected_out = f"sitemap.{output_type}"
+            match output_loc:
+                case "console":
+                    assert result.output.strip() == "sitemap"
+                case "file":
+                    assert Path(expected_out).read_text().strip() == "sitemap"

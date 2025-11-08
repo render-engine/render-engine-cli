@@ -431,7 +431,7 @@ def sitemap(xml: bool, output: click.File, module_site: str):
     if output:
         Path(output).write_text(content)
     else:
-        print(content)
+        click.echo(content)
 
 
 if __name__ == "__main__":
