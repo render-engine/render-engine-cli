@@ -26,6 +26,8 @@ from render_engine_cli.utils import (
     validate_module_site,
 )
 
+MODULE_SITE_HELP = "The module (python file) and site (the Site object) for your site in the format module:site"
+
 try:
     # Get the RE version for display. If it's not set it means we're working locally.
     from render_engine.__version__ import version as re_version
@@ -123,7 +125,7 @@ def init(template: str, extra_context: str, no_input: bool, output_dir: Path, co
 @click.option(
     "--module-site",
     type=click.STRING,
-    # help="The module (python file) and site (the Site object) for your site in the format module:site",
+    help=MODULE_SITE_HELP,
     callback=validate_module_site,
 )
 @click.option(
@@ -146,7 +148,7 @@ def build(module_site: str, clean: bool):
 @click.option(
     "--module-site",
     type=click.STRING,
-    # help="The module (python file) and site (the Site object) for your site in the format module:site",
+    help=MODULE_SITE_HELP,
     callback=validate_module_site,
 )
 @click.option(
@@ -207,7 +209,7 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
 @click.option(
     "--module-site",
     type=click.STRING,
-    # help="The module (python file) and site (the Site object) for your site in the format module:site",
+    help=MODULE_SITE_HELP,
     callback=validate_module_site,
 )
 @click.option(
@@ -348,7 +350,7 @@ def new_entry(
 @click.option(
     "--module-site",
     type=click.STRING,
-    # help="The module (python file) and site (the Site object) for your site in the format module:site",
+    help=MODULE_SITE_HELP,
     callback=validate_module_site,
 )
 @click.option(
@@ -401,7 +403,7 @@ def templates(module_site: str, theme_name: str, filter_value: str):
 @click.option(
     "--module-site",
     type=click.STRING,
-    # help="The module (python file) and site (the Site object) for your site in the format module:site",
+    help=MODULE_SITE_HELP,
     callback=validate_module_site,
 )
 @click.option(
