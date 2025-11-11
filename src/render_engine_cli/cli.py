@@ -27,6 +27,7 @@ from render_engine_cli.utils import (
 )
 
 MODULE_SITE_HELP = "The module (python file) and site (the Site object) for your site in the format module:site"
+console = Console()
 
 try:
     # Get the RE version for display. If it's not set it means we're working locally.
@@ -140,7 +141,7 @@ def build(module_site: str, clean: bool):
     module, site_name = split_module_site(module_site)
     site = get_site(module, site_name)
     if clean:
-        remove_output_folder(Path(site.output_path))
+        remove_output_folder(Path(site.output_path), console=console)
     site.render()
 
 
@@ -154,7 +155,7 @@ def build(module_site: str, clean: bool):
 @click.option(
     "-c",
     "--clean",
-    help="Clean the output folder prior to building.",
+    help="Clean the output folder prior to building. If `--reload` is set this will clean on each reload.",
     is_flag=True,
     default=False,
 )
@@ -165,7 +166,13 @@ def build(module_site: str, clean: bool):
     is_flag=True,
     default=False,
 )
-@click.option("-p", "--port", type=click.IntRange(0, 65534), help="Port to serve on", default=8000.0)
+@click.option(
+    "-p",
+    "--port",
+    type=click.IntRange(0, 65534),
+    help="Port to serve on",
+    default=8000.0,
+)
 def serve(module_site: str, clean: bool, reload: bool, port: int):
     """
     Create an HTTP server to serve the site at `localhost`.
@@ -186,7 +193,7 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
     site = get_site(module, site_name)
 
     if clean:
-        remove_output_folder(Path(site.output_path))
+        remove_output_folder(Path(site.output_path), console=console)
     site.render()
 
     server_address = ("127.0.0.1", port)
@@ -199,6 +206,7 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
         output_path=site.output_path,
         patterns=None,
         ignore_patterns=[r".*output\\*.+$", r"\.\\\..+$", r".*__.*$"],
+        clean=clean,
     )
 
     with handler:
@@ -378,7 +386,6 @@ def templates(module_site: str, theme_name: str, filter_value: str):
     """
     module, site_name = split_module_site(module_site)
     site = get_site(module, site_name)
-    console = Console()
 
     if theme_name:
         available_themes = get_available_themes(console, site, theme_name)

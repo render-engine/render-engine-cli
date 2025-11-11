@@ -2,13 +2,12 @@ import threading
 import time
 import traceback
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 import watchfiles
 from rich.console import Console
 
-from render_engine_cli.utils import get_site
-
-console = Console()
+from render_engine_cli.utils import get_site, remove_output_folder
 
 
 def spawn_server(server_address: tuple[str, int], directory: str) -> ThreadingHTTPServer:
@@ -59,6 +58,7 @@ class ServerEventHandler:
         dirs_to_watch: str | None = None,
         patterns: list[str] | None = None,
         ignore_patterns: list[str] | None = None,
+        clean: bool = False,
         *args,
         **kwargs,
     ) -> None:
@@ -70,10 +70,12 @@ class ServerEventHandler:
         self.dirs_to_watch = dirs_to_watch
         self.patterns = patterns
         self.ignore_patterns = ignore_patterns
+        self.clean = clean
+        self.console = Console()
 
     def start_server(self) -> None:
         if not getattr(self, "server", False):
-            console.print(
+            self.console.print(
                 f"[bold green]Spawning server on http://{self.server_address[0]}:{self.server_address[1]}[/bold green]"
             )
             self.server = spawn_server(self.server_address, self.output_path)
@@ -81,18 +83,20 @@ class ServerEventHandler:
         self._thread.start()
 
     def stop_server(self) -> None:
-        console.print("[bold red]Stopping server[/bold red]")
+        self.console.print("[bold red]Stopping server[/bold red]")
         self.server.shutdown()
         self._thread.join()
 
     def rebuild(self) -> None:
-        console.print("[bold purple]Reloading and Rebuilding site...[/bold purple]")
+        self.console.print("[bold purple]Reloading and Rebuilding site...[/bold purple]")
         site = get_site(self.import_path, self.site, reload=True)
+        if self.clean:
+            remove_output_folder(Path(site.output_path), console=self.console)
         try:
             site.render()
         except Exception:
-            console.print("[bold red]Failed to render site[/bold red]")
-            console.print(traceback.format_exc())
+            self.console.print("[bold red]Failed to render site[/bold red]")
+            self.console.print(traceback.format_exc())
             pass
 
     def stop_watcher(self) -> bool:
@@ -122,7 +126,7 @@ class ServerEventHandler:
         If a KeyboardInterrupt is raised, it stops the observer and server.
         """
 
-        console.print(f"[yellow]Serving {self.output_path}[/yellow]")
+        self.console.print(f"[yellow]Serving {self.output_path}[/yellow]")
         while not self.stop_watcher():
             try:
                 if self.dirs_to_watch:
@@ -144,5 +148,5 @@ class ServerEventHandler:
         """Stopping Context manager for the class"""
 
         self.stop_server()
-        console.print("[bold red]FIN![/bold red]")
+        self.console.print("[bold red]FIN![/bold red]")
         return None
