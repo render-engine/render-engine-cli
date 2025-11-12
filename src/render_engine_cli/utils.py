@@ -102,9 +102,11 @@ def get_site_content_paths(site: Site) -> list[Path | str | None]:
     return list(filter(None, base_paths))
 
 
-def remove_output_folder(output_path: Path) -> None:
+def remove_output_folder(output_path: Path, console: Console = None) -> None:
     """Remove the output folder"""
 
+    if console:
+        console.print(f"[bold yellow]Removing exisiting rendered content from {str(output_path)}")
     # TODO: #778 Should we check for Operating System
     if output_path.exists():
         shutil.rmtree(output_path)
