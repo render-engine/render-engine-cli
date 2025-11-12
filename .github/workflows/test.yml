@@ -24,6 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: "true"
       - name: Run tests
         run: |
           uv run -p ${{ matrix.python-version }} --prerelease=allow pytest
@@ -35,8 +37,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: "true"
       - name: Set up env
-        run: uv sync --prerelease=allow
+      # Allow prerelease if explicitly marked in pyproject.toml so we can prerelease in conjunction
+      # with engine updates.
+        run: uv sync --prerelease=explicit
       - name: Install package
         run: source .venv/bin/activate && uv pip install .
       - name: Check entry point
