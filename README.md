@@ -46,6 +46,36 @@ dependencies = [
 ]
 ```
 
+## Shell Completion
+
+The Render Engine CLI supports tab completion for bash, zsh, and fish shells. This feature helps you quickly complete commands, options, and arguments.
+
+### Bash
+
+Add this to your `~/.bashrc`:
+
+```bash
+eval "$(_RENDER_ENGINE_COMPLETE=bash_source render-engine)"
+```
+
+### Zsh
+
+Add this to your `~/.zshrc`:
+
+```zsh
+eval "$(_RENDER_ENGINE_COMPLETE=zsh_source render-engine)"
+```
+
+### Fish
+
+Add this to your `~/.config/fish/completions/render-engine.fish`:
+
+```fish
+eval (env _RENDER_ENGINE_COMPLETE=fish_source render-engine)
+```
+
+After adding the appropriate line to your shell configuration file, restart your shell or source the configuration file to enable completion.
+
 ## Getting Started
 
 Check out the [Getting Started](https://render-engine.readthedocs.io/en/latest/page/) Section in the [Documentation](https://render-engine.readthedocs.io)
