@@ -52,29 +52,29 @@ For a smoother CLI experience, Render Engine CLI provides built-in shell complet
 for `bash`, `zsh`, and `fish`. This allows you to quickly autocomplete commands, options,
 and arguments directly in your terminal.
 
-- **Bash**
+### Bash
 
-  Add this to your `~/.bashrc`:
+Add this to your `~/.bashrc`:
 
-  ```bash
-  eval "$(_RENDER_ENGINE_COMPLETE=bash_source render-engine)"
-  ```
+```sh
+eval "$(_RENDER_ENGINE_COMPLETE=bash_source render-engine)"
+```
 
-- **Zsh**
+### Zsh
 
-  Add this to your `~/.zshrc`:
+Add this to your `~/.zshrc`:
 
-  ```zsh
-  eval "$(_RENDER_ENGINE_COMPLETE=zsh_source render-engine)"
-  ```
+```sh
+eval "$(_RENDER_ENGINE_COMPLETE=zsh_source render-engine)"
+```
 
-- **Fish**
+### Fish
 
-  Add this to your `~/.config/fish/completions/render-engine.fish`:
+Add this to your `~/.config/fish/completions/render-engine.fish`:
 
-  ```fish
-  eval (env _RENDER_ENGINE_COMPLETE=fish_source render-engine)
-  ```
+```sh
+eval (env _RENDER_ENGINE_COMPLETE=fish_source render-engine)
+```
 
 After adding the appropriate line to your shell configuration file, restart your shell or source the configuration file to enable completion.
 
