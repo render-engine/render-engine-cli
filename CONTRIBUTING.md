@@ -1,6 +1,6 @@
 # Contributing to the Render Engine Projects
 
-Render Engine CLI is the CLI tool for the Render Engin static site generator. Please refer to
+Render Engine CLI is the CLI tool for the Render Engine static site generator. Please refer to
 the main [CONTRIBUTING.md](https://github.com/render-engine/render-engine/blob/main/CONTRIBUTING.md)
 for more details on how to contribute.
 
