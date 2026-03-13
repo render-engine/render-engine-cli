@@ -94,7 +94,6 @@ class ServerEventHandler:
             remove_output_folder(Path(site.output_path), console=self.console)
         try:
             local_url = f"http://{self.server_address[0]}:{self.server_address[1]}"
-            site.update_site_vars(SITE_URL=local_url)
             site.render(site_url=local_url)
         except Exception:
             self.console.print("[bold red]Failed to render site[/bold red]")
