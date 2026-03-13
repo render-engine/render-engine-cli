@@ -192,11 +192,14 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
     module, site_name = split_module_site(module_site)
     site = get_site(module, site_name)
 
+    server_address = ("127.0.0.1", port)
+
     if clean:
         remove_output_folder(Path(site.output_path), console=console)
-    site.render()
 
-    server_address = ("127.0.0.1", port)
+    local_url = f"http://{server_address[0]}:{server_address[1]}"
+    site.update_site_vars(SITE_URL=local_url)
+    site.render(site_url=local_url)
 
     handler = ServerEventHandler(
         import_path=module,
