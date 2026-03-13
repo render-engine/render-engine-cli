@@ -198,7 +198,6 @@ def serve(module_site: str, clean: bool, reload: bool, port: int):
         remove_output_folder(Path(site.output_path), console=console)
 
     local_url = f"http://{server_address[0]}:{server_address[1]}"
-    site.update_site_vars(SITE_URL=local_url)
     site.render(site_url=local_url)
 
     handler = ServerEventHandler(
