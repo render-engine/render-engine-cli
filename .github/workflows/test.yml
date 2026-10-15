@@ -16,7 +16,7 @@ jobs:
     name: PyTest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
         os: [windows-latest, macos-latest, ubuntu-latest]
       fail-fast: true
     runs-on: ${{ matrix.os }}
@@ -40,8 +40,8 @@ jobs:
         with:
           enable-cache: "true"
       - name: Set up env
-      # Allow prerelease if explicitly marked in pyproject.toml so we can prerelease in conjunction
-      # with engine updates.
+        # Allow prerelease if explicitly marked in pyproject.toml so we can prerelease in conjunction
+        # with engine updates.
         run: uv sync --prerelease=explicit
       - name: Install package
         run: source .venv/bin/activate && uv pip install .
