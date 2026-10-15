@@ -3,14 +3,14 @@ name = "render-engine-cli"
 dynamic = ["version"]
 description = "Command line tool for the Render Engine static site generator"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
   "click>=8.2.1",
   "cookiecutter>=2.6.0",
   "render-engine>=2025.11.1a1",
   "rich>=14.0.0",
   "toml>=0.10.2",
-  "watchfiles>=1.1.0",
+  "watchfiles>=1.3.0",
 ]
 
 [dependency-groups]
@@ -18,7 +18,7 @@ dev = [
   "ephemeral-port-reserve>=1.1.4",
   "httpx>=0.28.1",
   "mypy>=1.16.1",
-  "pre-commit>=4.2.0",
+  "prek==0.5.5",
   "pytest>=8.4.1",
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.1",
@@ -47,7 +47,7 @@ version_file = "src/render_engine_cli/__version__.py"
 [tool.ruff]
 line-length = 120
 indent-width = 4
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
