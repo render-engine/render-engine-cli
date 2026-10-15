@@ -1,3 +1,16 @@
+# The __lazy_modules__ variable tells the Python 3.15 and later interpreters to lazily import the modules in the
+# list. Since older versions of Python don't know about this variable it has no effect with them.
+__lazy_modules__: list[str] = [
+    "datetime",
+    "json",
+    "pathlib",
+    "dateutil",
+    "rich",
+    "render_engine",
+    "render_engine_cli.event",
+    "render_engine_cli.utils",
+]
+
 import datetime
 import json
 from pathlib import Path
