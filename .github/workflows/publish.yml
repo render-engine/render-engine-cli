@@ -2,32 +2,40 @@ name: Build distribution
 
 on:
   release:
-    types: [created]
+    types: [created, published, prereleased]
+  workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-  id-token: write
+permissions: {}
 
 jobs:
   test:
-    uses: ./.github/workflows/test.yml
-  lint:
-    uses: ./.github/workflows/lint.yml
-  deploy:
-    needs: [test, lint]
-    name: Deploy to PyPI
+    uses: $/.github/workflows/test.yml
+    permissions:
+      contents: read
+      pull-requests: write # This is needed for the coverage badge. Will fail on startup without it.
+
+  build-and-inspect-package:
+    name: Build & inspect package
+    needs: test
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          enable-cache: "true"
-      - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-      # Allow prerelease if explicitly marked in pyproject.toml so we can prerelease in conjunction
-      # with engine updates.
-      - run: uv build --prerelease=explicit
-      - uses: pypa/gh-action-pypi-publish@release/v1
+          persist-credentials: false
+      - uses: hynek/build-and-inspect-python-package@2abe76da66d0a6a4a227101f9348ee855797cfa5 # v3.0.1
+
+  publish-pypi:
+    needs: build-and-inspect-package
+    if: startsWith(github.ref, 'refs/tags/') # only publish to PyPI on tag pushes
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          packages-dir: ./dist
+          path: dist
+          name: Packages
+      - name: Push to PyPI
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
