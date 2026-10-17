@@ -57,14 +57,14 @@ def app(): ...
 @click.option(
     "-e",
     "--extra-context",
-    help="Extra context to pass to the cookiecutter template. This must be a JSON string",
+    help="Extra context to pass to the cookiecutter template. This must be a JSON string.",
     default=None,
     type=click.STRING,
 )
 @click.option(
     "-t",
     "--template",
-    help="Template tcd ..o use for creating a new site.",
+    help="Template to use for creating a new site.",
     default="https://github.com/render-engine/cookiecutter-render-engine-site",
     type=click.STRING,
 )
