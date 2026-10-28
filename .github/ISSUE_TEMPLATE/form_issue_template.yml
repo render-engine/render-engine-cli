@@ -1,0 +1,53 @@
+name: Bug Report
+description: File a quick bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees:
+  - octocat
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: summary-of-actions
+    attributes:
+      label: Summary Of Actions
+      description: A brief summary of the problem
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      description: What Operating System are you using?
+      options:
+        - Windows (include version)
+        - Linux (include distro)
+        - MacOS (include version)
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: What Python Version are you using?
+      placeholder: "3.14"
+  - type: textarea
+    id: additional-installations
+    attributes:
+      label: Have you installed Plugins/Themes/Custom Parsers?
+      description: please list them below
+  - type: textarea
+    id: commands-code-used
+    attributes:
+      label: What did you enter to get the output that you received?
+      render: Shell
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: Copy the Error or output that you receive.
+      render: Shell
