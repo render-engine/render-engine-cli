@@ -27,7 +27,7 @@ pip install render-engine-cli     # via pip
 uv pip install render-engine-cli  # via uv
 ```
 
-Since render engine itself is one of the dependencies of the CLI there is no need to isntall
+Since render engine itself is one of the dependencies of the CLI there is no need to install
 them separately. With that, the version of render engine in the CLI dependencies is not pinned
 to a specific version so if you want to pin it you can do so either in your `requirements.txt`
 (`pip`) or `pyproject.toml` (`uv`) files.
