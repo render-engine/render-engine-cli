@@ -15,7 +15,7 @@ Render Engine CLI is the CLI tool for the Render Engine static site generator.
 
 ## Installing the Render Engine CLI
 
-To use the render engine, you must have Python 3.10 or greater installed. You can download Python from [python.org](https://python.org).
+To use the render engine, you must have Python 3.11 or greater installed. You can download Python from [python.org](https://python.org).
 
 - Linux/MacOS: [python.org](https://python.org)
 - Windows: [Microsoft Store](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K)
@@ -77,6 +77,17 @@ eval (env _RENDER_ENGINE_COMPLETE=fish_source render-engine)
 ```
 
 After adding the appropriate line to your shell configuration file, restart your shell or source the configuration file to enable completion.
+
+## Create a New Site
+
+Create a new Render Engine site and answer a few questions about it:
+
+```shell
+render-engine init
+```
+
+Use `render-engine init --no-input` to skip the questions and use the default answers,
+or `render-engine init --help` to see all options.
 
 ## Getting Started
 

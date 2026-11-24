@@ -12,7 +12,6 @@ __lazy_modules__: list[str] = [
 ]
 
 import datetime
-import json
 from pathlib import Path
 
 import click
@@ -66,73 +65,15 @@ Render Engine     version {re_version}""".strip()
 def app(): ...
 
 
-@app.command
-@click.option(
-    "-e",
-    "--extra-context",
-    help="Extra context to pass to the cookiecutter template. This must be a JSON string.",
-    default=None,
-    type=click.STRING,
+@app.command(
+    context_settings={"ignore_unknown_options": True, "allow_extra_args": True, "help_option_names": []},
 )
-@click.option(
-    "-t",
-    "--template",
-    help="Template to use for creating a new site.",
-    default="https://github.com/render-engine/cookiecutter-render-engine-site",
-    type=click.STRING,
-)
-@click.option(
-    "--no-input",
-    is_flag=True,
-    default=False,
-    help="Do not prompt for parameters.",
-)
-@click.option(
-    "-o",
-    "--output-dir",
-    type=click.Path(
-        path_type=Path,
-        exists=False,
-    ),
-    default=Path("./"),
-)
-@click.option(
-    "-c",
-    "--config-file",
-    type=click.Path(
-        path_type=Path,
-        exists=True,
-        readable=True,
-    ),
-    default=None,
-)
-def init(template: str, extra_context: str, no_input: bool, output_dir: Path, config_file: Path):
-    """
-    Create a new site configuration. You can provide extra_context to the cookiecutter template.
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def init(args: tuple[str, ...]) -> None:
+    """Create a new Render Engine site."""
+    from render_engine.init.__main__ import main
 
-    Also, any argument that cookiecutter accepts can be passed to this command.
-
-    The template can be a local path or a git repository.
-    """
-
-    # Check if cookiecutter is installed
-    try:
-        from cookiecutter.main import cookiecutter
-    except ImportError:
-        click.secho(
-            "You need to install cookiecutter to use this command. Run `pip install cookiecutter` to install it.",
-            err=True,
-            fg="red",
-        )
-        raise click.Exit(0)
-    extra_context = json.loads(extra_context) if extra_context else None
-    cookiecutter(
-        template=template,
-        extra_context=extra_context,
-        output_dir=output_dir,
-        config_file=config_file,
-        no_input=no_input,
-    )
+    main(list(args), prog="render-engine init")
 
 
 @app.command

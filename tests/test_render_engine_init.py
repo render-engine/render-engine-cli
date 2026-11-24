@@ -6,109 +6,53 @@ from click.testing import CliRunner
 from render_engine_cli.cli import app
 
 
-@pytest.fixture(scope="module", autouse=True)
-def get_test_template(tmp_path_factory):
-    path = tmp_path_factory.getbasetemp()
-    project_slug = path.joinpath("{{cookiecutter.project_slug}}")
-    project_slug.mkdir()
-    project_slug.joinpath("app.py").write_text("hello {{cookiecutter.world}}")
-    path.joinpath("cookiecutter.json").write_text(json.dumps({"world": "world", "project_slug": "testslug"}))
-
-    return path.resolve()
-
-
 @pytest.fixture
 def runner():
     """CLI test runner fixture"""
     yield CliRunner()
 
 
-def tests_error_raised_if_cookiecutter_not_installed(request, mocker, runner, get_test_template):
-    """Tests that an error is raised if cookiecutter is not installed"""
+def test_init_is_listed_in_the_help(runner):
+    """`render-engine --help` lists the init command."""
+    result = runner.invoke(app, ["--help"])
 
-    # Mock importing cookiecutter
-    mocker.patch("cookiecutter.main.cookiecutter", side_effect=ImportError)
+    assert result.exit_code == 0
+    assert "Create a new Render Engine site." in result.output
 
+
+def test_init_passes_the_arguments_to_render_engine(runner, mocker):
+    """All arguments after `init` are passed to render-engine's init, with the CLI's command name."""
+    main = mocker.patch("render_engine.init.__main__.main")
+
+    runner.invoke(app, ["init", "--no-input", "-o", "sites", "-e", '{"site_title": "My Blog"}'])
+
+    main.assert_called_once_with(
+        ["--no-input", "-o", "sites", "-e", '{"site_title": "My Blog"}'], prog="render-engine init"
+    )
+
+
+def test_init_help_shows_the_init_options(runner):
+    """`render-engine init --help` shows the options of render-engine's init, under the CLI's command name."""
+    result = runner.invoke(app, ["init", "--help"])
+
+    assert result.exit_code == 0
+    assert "usage: render-engine init" in result.output
+    assert "--no-input" in result.output
+
+
+def test_init_creates_a_site(runner, tmp_path):
+    """`render-engine init --no-input` creates a site from the answers in --extra-context."""
     result = runner.invoke(
-        app,
-        [
-            "init",
-            "--extra-context",
-            json.dumps(
-                {
-                    "project_slug": request.node.name,
-                }
-            ),
-            "--template",
-            get_test_template,
-            "--no-input",
-        ],
-    )
-    assert isinstance(result.exception, ImportError)
-
-
-def test_init_local_path_extra_context(request, tmp_path, get_test_template, runner):
-    """
-    Tests that you can call init using a local path
-
-    It also tests that the extra_context is passed to the template.
-    """
-    runner.invoke(
-        app,
-        [
-            "init",
-            "--extra-context",
-            json.dumps(
-                {
-                    "project_slug": request.node.name,
-                }
-            ),
-            "--template",
-            get_test_template,
-            "--no-input",
-            "--output-dir",
-            tmp_path,
-        ],
+        app, ["init", "--no-input", "-o", str(tmp_path), "-e", json.dumps({"site_title": "My Blog"})]
     )
 
-    template_path = tmp_path.joinpath(request.node.originalname)
-    app_py = template_path.joinpath("app.py")
-    assert app_py.exists()
-    assert app_py.read_bytes() == b"hello world"
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "my-blog" / "app.py").is_file()
 
 
-def test_init_called_with_config(request, tmp_path, tmp_path_factory, runner):
-    """
-    Tests that you can call init with cookiecutter configs passed in through a config file.
-    """
-    temp_file = tmp_path.joinpath("test_cookiecutter_args.json")
-    temp_file.write_text(
-        f"""
-default_context:
-    world: "Earth"
-    project_slug: {request.node.originalname}
-"""
-    )
-    runner.invoke(
-        app,
-        [
-            "init",
-            "--extra-context",
-            json.dumps(
-                {
-                    "project_slug": request.node.name,
-                }
-            ),
-            "--template",
-            str(tmp_path_factory.getbasetemp().resolve()),
-            "--no-input",
-            "--output-dir",
-            tmp_path,
-            "--config-file",
-            temp_file,
-        ],
-    )
-    output_path = tmp_path.joinpath(request.node.originalname)
-    app_py = output_path.joinpath("app.py")
-    assert app_py.exists()
-    assert app_py.read_bytes() == b"hello Earth"
+def test_init_template_option_is_rejected(runner):
+    """Custom templates are no longer supported, so --template is an error."""
+    result = runner.invoke(app, ["init", "--template", "https://github.com/me/my-template"])
+
+    assert result.exit_code == 2
+    assert "unrecognized arguments: --template" in result.output
