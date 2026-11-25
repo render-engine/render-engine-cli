@@ -10,7 +10,7 @@ Render Engine CLI is the CLI tool for the Render Engine static site generator.
 
 - [CLI Documentation](https://render-engine.readthedocs.io/en/latest/cli/docs/cli/)
 - [Check out the Render Engine Documentation](https://render-engine.readthedocs.io/en/latest/)
-- [Contributors and Builders, check out the contribution guide](https://render-engine.readthedocs.io/en/latest/contributing/CODE_OF_CONDUCT/)
+- [Contributors and Builders, check out the contribution guide](https://render-engine.readthedocs.io/en/latest/contributing/CONTRIBUTING/)
 - [Join the community!](https://discord.gg/2xMQ4j4d8m)
 
 ## Installing the Render Engine CLI
